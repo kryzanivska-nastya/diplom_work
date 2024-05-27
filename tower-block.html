@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, user-scalable=no" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>HTML 5 Boilerplate</title>
+        <link rel="stylesheet" href="tower-block.css" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+        <style>
+            #comment-section {
+                position: absolute;
+                bottom: 3px;
+                left: 10px;
+                width: 300px;
+                max-height: 400px;
+                overflow-y: auto;
+                background: rgba(255, 255, 255, 0.9);
+                padding: 10px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                z-index: 20;
+            }
+
+            #comment-form {
+                position: absolute;
+                bottom: 200px;
+                left: 10px;
+                width: 300px;
+                background: rgba(255, 255, 255, 0.9);
+                padding: 10px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                z-index: 20;
+            }
+
+            #comment-form input,
+            #comment-form textarea {
+                width: 93%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            #comment-form button {
+                width: 100%;
+                padding: 10px;
+                background: #333344;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            #comment-form button:hover {
+                background: #555566;
+            }
+
+            .comment {
+                margin-bottom: 10px;
+                padding: 10px;
+                border-bottom: 1px solid #ccc;
+            }
+
+            .comment p {
+                margin: 0;
+            }
+        </style>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                loadComments();
+
+                // Prevent game action when interacting with the comment form
+                document
+                    .getElementById("comment-form")
+                    .addEventListener("click", function (e) {
+                        e.stopPropagation();
+                    });
+
+                document
+                    .getElementById("comment-form")
+                    .addEventListener("submit", function (e) {
+                        e.preventDefault();
+                        addComment();
+                    });
+
+                // Prevent game action when clicking input fields
+                document
+                    .getElementById("username-input")
+                    .addEventListener("click", function (e) {
+                        e.stopPropagation();
+                    });
+
+                document
+                    .getElementById("comment-text")
+                    .addEventListener("click", function (e) {
+                        e.stopPropagation();
+                    });
+            });
+
+            function addComment() {
+                let commentText = document.getElementById("comment-text").value;
+                let username = document.getElementById("username-input").value;
+
+                if (!username || !commentText) {
+                    alert("Please enter both username and comment.");
+                    return;
+                }
+
+                let comments =
+                    JSON.parse(localStorage.getItem("comments")) || [];
+                let newComment = {
+                    username: username,
+                    text: commentText,
+                    timestamp: new Date().toISOString(),
+                };
+                comments.push(newComment);
+                localStorage.setItem("comments", JSON.stringify(comments));
+
+                loadComments();
+                document.getElementById("comment-text").value = "";
+                document.getElementById("username-input").value = "";
+            }
+
+            function loadComments() {
+                let comments =
+                    JSON.parse(localStorage.getItem("comments")) || [];
+                let commentSection = document.getElementById("comment-section");
+                commentSection.innerHTML = "";
+
+                comments.forEach(function (comment) {
+                    let commentElement = document.createElement("div");
+                    commentElement.classList.add("comment");
+                    commentElement.innerHTML = `<p><strong>${comment.username}:</strong> ${comment.text}</p>`;
+                    commentSection.appendChild(commentElement);
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <div id="container">
+            <div id="game"></div>
+            <div id="score">0</div>
+            <div id="comment-section"></div>
+            <form id="comment-form">
+                <input
+                    type="text"
+                    id="username-input"
+                    placeholder="Ваш нікнейм"
+                    required
+                />
+                <textarea
+                    id="comment-text"
+                    placeholder="Напишіть ваш коментар"
+                    required
+                ></textarea>
+                <button type="submit">Додати коментар</button>
+            </form>
+            <div id="instructions">
+                Натисність (або натисність пробіл) щоб розмістити блок
+            </div>
+            <div class="game-over">
+                <h2>Гра закінчена!</h2>
+                <p>Ви чудово впорались, ви найкращий.</p>
+                <p>Натисни на мене щоб розпочати знову!</p>
+            </div>
+            <div class="game-ready">
+                <div id="start-button">Start</div>
+            </div>
+            <a id="logout" href="logout.php">Вийти</a>
+            <div id="saved-score">Збережені бали: 0</div>
+            <a href="login.html">Увійти</a>
+        </div>
+        <script src="tower-block.js"></script>
+    </body>
+</html>
